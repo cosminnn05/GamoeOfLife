@@ -29,8 +29,8 @@ void citireMatrice(const char *filename, char ***grid, int *N, int *M, int *K, i
     }
 
     fscanf(file, "%d", task);  // Citirea numărului taskului
-    fscanf(file, "%d %d", N, M);
-    fscanf(file, "%d", K);
+    fscanf(file, "%d %d", N, M);    //Citirea dimensiunilor N si M
+    fscanf(file, "%d", K);  //Citirea nr generatii
 
     *grid = (char **)malloc(*N * sizeof(char *));
     for (int i = 0; i < *N; i++) {
@@ -65,7 +65,7 @@ int countAliveNeighbors(char **grid, int N, int M, int x, int y) {
 
     for (int i = 0; i < 8; i++) {
         int nx = x + dx[i], ny = y + dy[i];
-        if (nx >= 0 && nx < N && ny >= 0 && ny < M && grid[nx][ny] == ALIVE) {
+        if (nx >= 0 && nx < N && ny >= 0 && ny < M && grid[nx][ny] == ALIVE) {  //Verifica limitele superioara, inferioara, la stanga si la dreapta a grilei si daca celula vecina este vie
             count++;
         }
     }
@@ -280,11 +280,11 @@ Nod3* createTree (char **matrice, int N, int M, int nivelCurent, int nivelMaxim)
     nod->right = NULL;
 
     if (nivelCurent < nivelMaxim) {
-        char **leftMatrix = applyRuleB(nod->matrice, N, M);
-        char **rightMatrix = applyStandardRule(nod->matrice, N, M);
+        char **leftMatrix = applyRuleB(nod->matrice, N, M);             //Aplicam, in stanga, regula noua B
+        char **rightMatrix = applyStandardRule(nod->matrice, N, M);     //Aplicam, in dreapta, regula obisnuita
 
-        nod->left = createTree(leftMatrix, N, M, nivelCurent+1, nivelMaxim);
-        nod->right = createTree(rightMatrix, N, M, nivelCurent+1, nivelMaxim);
+        nod->left = createTree(leftMatrix, N, M, nivelCurent+1, nivelMaxim);    //Cream matricea noua in nodul din stanga
+        nod->right = createTree(rightMatrix, N, M, nivelCurent+1, nivelMaxim);  //Cream matricea noua in nodul din dreapta
 
         //Eliberam matricile
         for (int i=0; i<N; i++){
@@ -363,7 +363,7 @@ void dfsHamiltonian(int **adj, int *visited, int *path, int adancime, int n, int
     //Caz de baza : am gasit un lant complet
     if (adancime==n){
         *maxLenght =adancime;
-        memcpy(bestPath, path, adancime * sizeof(int));
+        memcpy(bestPath, path, adancime * sizeof(int));     //Functia memcpy copiaza un block de memorie dintr-o parte in alta, din path in bestPath
         *foundFull = 1;
         return;
     }
@@ -382,7 +382,7 @@ void dfsHamiltonian(int **adj, int *visited, int *path, int adancime, int n, int
     }
 
     //Sortam vecinii lexicografic
-    qsort(vecini, nrvecini, sizeof(VecinAux), cmpVecinAux);
+    qsort(vecini, nrvecini, sizeof(VecinAux), cmpVecinAux);     //qsort adica quicksort, sorteaza "nrvecini" elemente din "vecini",  de marimea sizeof(VecinAux), dupa criteriul de comparatie din cmpVecinAuz
 
     //DFS recursiv pentru fiecare vecin
     for (int i = 0; i < nrvecini && !(*foundFull); i++) {
@@ -412,14 +412,14 @@ void processNodeHamiltonian(FILE *file, char **matrice, int N, int M){
         return;
     }
     //Sortam celulele vii pentru consistenta
-    qsort(vii, count, sizeof(Celula), compareCells);
+    qsort(vii, count, sizeof(Celula), compareCells);    //Le sortam pentru consistenta, pentru a fi mai usor de parcurs, fiind sortate mai intai dupa linie,a apoi dupa coloana
 
     //Construim matricea de adiacenta
     int **adj =malloc(count * sizeof(int *));
     for (int i=0; i<count; i++){
         adj[i] =calloc(count, sizeof(int));
         for (int j=0; j<count; j++) {
-            if (i != j && abs(vii[i].linie - vii[j].linie) <= 1 && abs(vii[i].coloana - vii[j].coloana) <= 1)
+            if (i != j && abs(vii[i].linie - vii[j].linie) <= 1 && abs(vii[i].coloana - vii[j].coloana) <= 1)   //Conditie ca celulele sa fie diferite sa fie vecine (aceasi linie sau coloana daca diferenta este 0, pe linii adiacente daca este 1)
                 adj[i][j] = 1;
         }
     }
@@ -443,7 +443,7 @@ void processNodeHamiltonian(FILE *file, char **matrice, int N, int M){
     int bestIdx =-1;
     int *bestPath =malloc(count * sizeof(int));
 
-    //Parcurgem fiecare componenta conexa pt a gasicel mai lung lant
+    //Parcurgem fiecare componenta conexa pt a gasi cel mai lung lant
     for (int c=0; c<numComponents; c++) {
         int n =compSizes[c];
 
@@ -457,7 +457,7 @@ void processNodeHamiltonian(FILE *file, char **matrice, int N, int M){
             continue;
         }
 
-        //Construim sub-matricea dew adiacenta pt componenta curenta
+        //Construim sub-matricea de adiacenta pt componenta curenta
         int **adjC =malloc(n * sizeof(int *));
         for (int i=0; i<n; i++) {
             adjC[i] =malloc(n * sizeof(int));
@@ -517,7 +517,7 @@ void processNodeHamiltonian(FILE *file, char **matrice, int N, int M){
     if (bestLenght == -1) {
         fprintf(file, "-1\n");
     } else {
-        fprintf(file, "%d\n", bestLenght - 1);
+        fprintf(file, "%d\n", bestLenght - 1);  //-1 pentru ca lungimea este nr de noduri -1
         for (int i = 0; i < bestLenght; i++) {
             int idx = components[bestIdx][bestPath[i]];
             fprintf(file, "(%d,%d)", vii[idx].linie, vii[idx].coloana);
