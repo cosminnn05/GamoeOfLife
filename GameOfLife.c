@@ -194,15 +194,17 @@ void reverseGeneration(char **grid, int N, int M, Nod *top){
     Nod *curent = top;
 
     while (curent){
-        for (int i=0; i<N; i++){
+        for (int i=0; i<curent->count_dif; i++){
             int linie= curent->diferente[i].linie;
             int coloana= curent->diferente[i].coloana;
 
             //Inversare stare celula
-            if(grid[linie][coloana] == ALIVE)
-                grid[linie][coloana] = DEAD;
-            else
-                grid[linie][coloana]= ALIVE;
+            if(linie >= 0 && linie <N && coloana >=0 && coloana <M){
+                if(grid[linie][coloana] == ALIVE)
+                    grid[linie][coloana] = DEAD;
+                else
+                    grid[linie][coloana]= ALIVE;
+            }       
         }
         curent = curent->urm;
     }
@@ -581,10 +583,13 @@ int main(int argc, char *argv[]) {
             push(&stiva, dif, nrDif);
         }
         scrieDiferente(argv[2], stiva);
+
+        //task2 bonus:
         reverseGeneration(grid, N, M, stiva);
         printf("Bonus: Matricea initiala reconstruita:\n");
         for(int i=0; i< N; i++)
             printf("%s\n", grid[i]);
+        //Eliberare memorie
         while(stiva){
             Nod *temp = stiva;
             stiva=stiva->urm;
