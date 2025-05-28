@@ -5,6 +5,8 @@
 #define ALIVE 'X'
 #define DEAD '+'
 
+
+//task 1
 typedef struct {
     int linie;
     int coloana;
@@ -98,6 +100,8 @@ int countAliveNeighbors(char **grid, int N, int M, int x, int y) {
 }
 */
 
+//task 2
+
 //Funcție nouă pentru a genera următoarea generație
 Celula* nextGenerationWithDiffs(char **grid, int N, int M, int *numDif) {
     char **newGrid = (char **)malloc(N * sizeof(char *));
@@ -185,7 +189,24 @@ void scrieDiferente(const char *filename, Nod *top) {
     fclose(file);
 }
 
+//task 2 bonus
+void reverseGeneration(char **grid, int N, int M, Nod *top){
+    Nod *curent = top;
 
+    while (curent){
+        for (int i=0; i<N; i++){
+            int linie= curent->diferente[i].linie;
+            int coloana= curent->diferente[i].coloana;
+
+            //Inversare stare celula
+            if(grid[linie][coloana] == ALIVE)
+                grid[linie][coloana] = DEAD;
+            else
+                grid[linie][coloana]= ALIVE;
+        }
+        curent = curent->urm;
+    }
+}
 
 
 
@@ -320,7 +341,7 @@ int compareCells(const void *a, const void *b){
     return ca->coloana - cb->coloana;
 }
 
-//cCompara 2 vecini (VecinAux) folosind coordonatele
+//Compara 2 vecini (VecinAux) folosind coordonatele
 int cmpVecinAux(const void *a, const void *b){
     const VecinAux *va = (const VecinAux *)a;
     const VecinAux *vb = (const VecinAux *)b;
@@ -560,6 +581,10 @@ int main(int argc, char *argv[]) {
             push(&stiva, dif, nrDif);
         }
         scrieDiferente(argv[2], stiva);
+        reverseGeneration(grid, N, M, stiva);
+        printf("Bonus: Matricea initiala reconstruita:\n");
+        for(int i=0; i< N; i++)
+            printf("%s\n", grid[i]);
         while(stiva){
             Nod *temp = stiva;
             stiva=stiva->urm;
